@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Link, NavLink, Route, Routes, useLocation, useParams } from 'react-router-dom';
+import { BrowserRouter, Link, NavLink, Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import { ArrowUpRight, ChevronRight, Menu, Search, X } from 'lucide-react';
 import { getPhilosopher, getTradition, philosophers, questions, traditions } from './data';
+import { Gate } from './journey/Gate.jsx';
 import './styles.css';
 
 function useReadingLog() {
@@ -75,10 +76,20 @@ function TraditionDetail() { const { id } = useParams(); const tradition = getTr
 
 function PhilosopherDetail() { const { id } = useParams(); const person = getPhilosopher(id); const { add } = useReadingLog(); useEffect(() => { if (person) add(`philosopher:${person.id}`); }, [person?.id]); if (!person) return <NotFound />; return <main className="detail-main"><section className="person-hero section-pad"><div className="person-portrait portrait-placeholder" data-initial={person.name.slice(0, 1)}><span>{person.latin}</span></div><div className="person-copy"><span className="kicker">{person.tradition} / {person.years}</span><h1>{person.name}</h1><p className="person-quote">“{person.quote}”</p><p>{person.intro}</p><div className="tag-row">{person.tags.map((tag) => <span key={tag}>{tag}</span>)}</div></div></section><section className="reading-note section-pad"><span className="kicker">A NOTE FOR YOUR READING</span><h2>先不要急着记住他的答案。</h2><p>试着带着一个自己的问题离开。思想真正开始的时刻，往往发生在书页合上之后。</p><Link className="text-link" to="/questions">继续探索问题 <ArrowUpRight size={16} /></Link></section></main>; }
 
-function QuestionDetail() { const { id } = useParams(); const question = questions.find((q) => q.id === id); if (!question) return <NotFound />; const relevant = philosophers.filter((p) => question.thinkers.includes(p.name)); return <main className="question-detail section-pad" style={{ '--accent': question.accent }}><Link className="back-link" to="/questions"><ChevronRight size={16} style={{ transform: 'rotate(180deg)' }} />返回问题索引</Link><div className="question-detail-head"><span className="question-number">{question.number}</span><h1>{question.title}</h1><p>{question.description}</p></div><div className="question-essay"><p className="dropcap">哲学从未只发生在书房。每一个时代都在重新发明这个问题，而每一个人也都需要在自己的生活里重新回答它。</p><p>沿着下方的人物线索阅读，你会看到不同的词语如何彼此碰撞：灵魂与身体，经验与理性，选择与责任。它们不提供一条笔直的道路，只让我们看见岔路口。</p></div><div className="question-thinkers"><span className="kicker">THINKERS TO FOLLOW</span><div>{relevant.map((person) => <Link key={person.id} to={`/philosopher/${person.id}`} className="thinker-chip"><span>{person.name}</span><ArrowUpRight size={15} /></Link>)}</div></div></main>; }
+function GatePage() {
+  const { id } = useParams();
+  const question = questions.find((q) => q.id === id);
+  if (!question) return <NotFound />;
+  return <Gate door={question} onExitToQuestions={() => undefined} />;
+}
 
 function NotFound() { return <main className="page-main section-pad"><PageIntro kicker="404" title="这页还在路上。" intro="返回档案馆，换一条路径继续。" /><Link className="text-link" to="/">回到首页 <ArrowUpRight size={16} /></Link></main>; }
 
-function App() { return <Layout><Routes><Route path="/" element={<Home />} /><Route path="/traditions" element={<Traditions />} /><Route path="/philosophers" element={<Philosophers />} /><Route path="/questions" element={<Questions />} /><Route path="/tradition/:id" element={<TraditionDetail />} /><Route path="/philosopher/:id" element={<PhilosopherDetail />} /><Route path="/question/:id" element={<QuestionDetail />} /><Route path="*" element={<NotFound />} /></Routes></Layout>; }
+function App() { return <Layout><Routes><Route path="/" element={<Home />} /><Route path="/traditions" element={<Traditions />} /><Route path="/philosophers" element={<Philosophers />} /><Route path="/questions" element={<Questions />} /><Route path="/tradition/:id" element={<TraditionDetail />} /><Route path="/philosopher/:id" element={<PhilosopherDetail />} /><Route path="/gate/:id" element={<GatePage />} /><Route path="/question/:id" element={<QuestionRedirect />} /><Route path="*" element={<NotFound />} /></Routes></Layout>; }
+
+function QuestionRedirect() {
+  const { id } = useParams();
+  return <Navigate to={`/gate/${id}`} replace />;
+}
 
 createRoot(document.getElementById('root')).render(<BrowserRouter><App /></BrowserRouter>);

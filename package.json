@@ -1,12 +1,15 @@
 {
   "name": "the-philosophy-archive",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node server/index.js --port 5173 & vite",
+    "server": "node server/index.js --port 5173",
     "build": "vite build",
-    "preview": "vite preview"
+    "start": "node server/index.js --port 5173",
+    "preview": "npm run build && node server/index.js --port 5173",
+    "test": "node --test server/ test/"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
