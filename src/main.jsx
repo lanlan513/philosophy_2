@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Link, NavLink, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import { ArrowUpRight, ChevronRight, Menu, Search, X } from 'lucide-react';
 import { getPhilosopher, getTradition, philosophers, questions, traditions } from './data';
+import ExploreGate from './explore/ExploreGate';
 import './styles.css';
 
 function useReadingLog() {
@@ -79,6 +80,6 @@ function QuestionDetail() { const { id } = useParams(); const question = questio
 
 function NotFound() { return <main className="page-main section-pad"><PageIntro kicker="404" title="这页还在路上。" intro="返回档案馆，换一条路径继续。" /><Link className="text-link" to="/">回到首页 <ArrowUpRight size={16} /></Link></main>; }
 
-function App() { return <Layout><Routes><Route path="/" element={<Home />} /><Route path="/traditions" element={<Traditions />} /><Route path="/philosophers" element={<Philosophers />} /><Route path="/questions" element={<Questions />} /><Route path="/tradition/:id" element={<TraditionDetail />} /><Route path="/philosopher/:id" element={<PhilosopherDetail />} /><Route path="/question/:id" element={<QuestionDetail />} /><Route path="*" element={<NotFound />} /></Routes></Layout>; }
+function App() { return <Layout><Routes><Route path="/" element={<Home />} /><Route path="/traditions" element={<Traditions />} /><Route path="/philosophers" element={<Philosophers />} /><Route path="/questions" element={<Questions />} /><Route path="/explore/:questionId" element={<ExploreGate />} /><Route path="/explore/:questionId/:sessionId/:step" element={<ExploreGate />} /><Route path="/tradition/:id" element={<TraditionDetail />} /><Route path="/philosopher/:id" element={<PhilosopherDetail />} /><Route path="/question/:id" element={<QuestionDetail />} /><Route path="*" element={<NotFound />} /></Routes></Layout>; }
 
 createRoot(document.getElementById('root')).render(<BrowserRouter><App /></BrowserRouter>);
